@@ -1,29 +1,11 @@
-# Analysis scripts for FLI embryo assessment
+# Proteomics analysis
 
-Bioinformatics analysis for the study **Femtosecond label-free optical sensing of embryo developmental competence using an endogenous NAD(P)H/lipofuscin ratio**.
+Code for independent High Score (HS) and Low Score (LS) embryo samples. Positive log2 fold changes indicate higher abundance in HS.
 
-This repository organizes RNA-seq, DNA methylation and proteomics analysis code for mouse embryos and offspring. Analysis scripts will be uploaded separately after preparation and verification.
+## Workflow
 
-## Analysis branches
+Protein quantification matrices → quantitative QC → original-result review / matrix reanalysis → functional enrichment → visualization.
 
-| Branch | Analysis |
-|---|---|
-| [RNAseq](https://github.com/ccw44/Analysis-scripts-for-FLI-embryo-assessment/tree/RNAseq) | RNA-seq preprocessing adapted from the previous study to mouse GRCm39/mm39 |
-| [Methylation](https://github.com/ccw44/Analysis-scripts-for-FLI-embryo-assessment/tree/Methylation) | Global methylation, regional differences, annotation and visualization in offspring blood and liver |
-| [Proteomics](https://github.com/ccw44/Analysis-scripts-for-FLI-embryo-assessment/tree/Proteomics) | Protein-matrix processing, differential abundance, functional enrichment and visualization |
+Scripts are pending upload by the study authors. Keep the original-result and matrix-reanalysis workflows distinct, with their corresponding candidate lists, enrichment backgrounds and figures. Distinguish nominal-P candidates from multiple-testing-supported findings.
 
-Each branch contains a brief description; analysis scripts are pending upload. This main branch contains the project overview and license.
-
-## Data and reproducibility
-
-RNA-seq and methylation sequencing files have been uploaded to GSA according to the study authors. Accession numbers and access links will be added after verification. Processed proteomics matrices are handled separately from this code repository. Original mass-spectrometry files have not been provided by the service company.
-
-Methylation reanalysis starts from per-sample CpG counts; proteomics analysis starts from protein quantification matrices. No completed end-to-end reproduction is claimed for scripts that have not yet been uploaded or tested.
-
-## Reference workflow
-
-The RNA-seq adaptation is based on the [RNAseq branch of the previous BMAL1 study](https://github.com/ccw44/Analysis-scripts-for-BMAL1-mediated-neurodifferentiation/tree/RNAseq). The mouse reference is GRCm39/mm39, with matching genome and annotation resources. The original analysis records must resolve the featureCounts-versus-HTSeq discrepancy before the final counting script and manuscript description are aligned.
-
-## License
-
-Code is distributed under the MIT License. Third-party code retains its original attribution and license. The code license does not automatically apply to datasets.
+Analysis starts from processed quantification matrices. Original mass-spectrometry files have not been provided by the service company; raw spectral searching and identification cannot be reproduced from the matrices alone. Required software, execution order and data links will be documented with the uploaded scripts.
