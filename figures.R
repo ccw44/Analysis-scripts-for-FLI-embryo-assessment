@@ -1,18 +1,10 @@
 #!/usr/bin/env Rscript
-# Every proteomics figure, produced from the outputs of analysis.R and
-# enrichment.R.
+# All proteomics figures, from the outputs of analysis.R and enrichment.R.
 #
 #   Rscript figures.R results/proteomics
 #
-# Sections, in output order:
-#   1  Fig. 2B, GSEA panels, per-protein supplements   - matrix reanalysis
-#   2  Fig. 2C                                        - provider result review
-#   3  supplementary ORA and GSEA panels              - provider result review
-#   4  exploratory ORA, raw P < 0.05 and |log2FC| >= 1
-#   5  exploratory volcano for the same foreground
-#
-# Sections 2 and 3 read the provider candidate branch; sections 1, 4 and 5 read the
-# matrix reanalysis. Each keeps its own candidate set and enrichment background.
+# Sections 2 and 3 use the provider candidate branch; 1, 4 and 5 use the matrix
+# reanalysis. Each keeps its own candidate set and enrichment background.
 args<-commandArgs(TRUE);stopifnot(length(args)==1);b<-normalizePath(args[1])
 suppressPackageStartupMessages({library(data.table);library(ggplot2);library(patchwork)})
 
@@ -27,7 +19,7 @@ savefig<-function(p,n,w,h){
 
 
 # ===========================================================================
-# 1  Fig. 2B, GSEA panels and per-protein supplements (matrix reanalysis)
+# 1  volcano, GSEA and per-protein panels (matrix reanalysis)
 # ===========================================================================
 theme_set(theme_classic(base_size=8,base_family='Arial')+theme(plot.title=element_text(size=9,face='bold'),plot.subtitle=element_text(size=7),legend.position='bottom',legend.text=element_text(size=7)))
 d<-copy(s$main);d[,status_plot:='Not significant'];d[significant_FDR==TRUE,status_plot:=ifelse(log2FC>0,'HS higher','LS higher')]
@@ -67,7 +59,7 @@ cat('FINAL FIGURES COMPLETED\n')
 
 
 # ===========================================================================
-# 2  Fig. 2C as published (provider candidate set)
+# 2  provider candidate ORA
 # ===========================================================================
 z<-copy(e$ORA[['legacy85_all KEGG']]);z<-head(z[Count>0][order(Pvalue,term)],15)
 gt<-e$gene_statistics
@@ -99,7 +91,7 @@ cat('REFERENCE-STYLE ORA PDF COMPLETED\n')
 
 
 # ===========================================================================
-# 3  Supplementary ORA and GSEA panels (provider candidate set)
+# 3  supplementary ORA and GSEA panels
 # ===========================================================================
 z<-copy(e$ORA[['legacy85_all KEGG']]);z<-head(z[Count>0][order(Pvalue,term)],15)
 genes<-e$gene_statistics

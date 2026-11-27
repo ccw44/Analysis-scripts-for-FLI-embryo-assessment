@@ -1,30 +1,11 @@
 #!/usr/bin/env python3
 """Stage the vendor protein result package and write the sample sheet.
 
-The vendor archive is read-only input.  Two modes:
+    python prepare_inputs.py results/proteomics [--archive proteinomics.zip]
 
-  python prepare_inputs.py results/proteomics --archive proteinomics.zip
-      extract the tabular result files and the sample-information text from
-      Result_N0011/ into <base>/inputs/ and record a sha256 for each
-
-  python prepare_inputs.py results/proteomics
-      use an already extracted Result_N0011 tree in <base>/inputs/ and rebuild
-      the same manifest from the files present
-
-Either way the sample sheet is written from the information actually supplied.
-Fields the vendor file does not state - animal identity, litter, batch,
-developmental stage - are written as ``unknown``; nothing is inferred.
-
-Input format
-    Result_N0011/01_Raw_Data/RawFile.txt         protein group, gene, peptides, 6 intensities
-    Result_N0011/03_Quality_Control/Filter_Data.txt
-    Result_N0011/04_Clean_Data/Normalized_Data.txt
-    Result_N0011/04_Clean_Data/Normalized_Impute_Data.txt
-    Result_N0011/06_SubGroup_Analysis/...
-
-Output
-    <base>/inputs/manifest.json
-    <base>/inputs/sample_metadata.tsv
+With --archive the tabular files are extracted from Result_N0011/ and hashed; without it
+an already extracted tree is used and the same manifest is rebuilt. Fields the vendor file
+does not state are written as ``unknown``; nothing is inferred.
 """
 from __future__ import annotations
 
