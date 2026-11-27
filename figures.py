@@ -1,16 +1,7 @@
 #!/usr/bin/env python
-"""Every figure of the methylation analysis, fig01 to fig15.
+"""All methylation figures: a vector PDF per panel plus a CSV of the plotted values.
 
-Sections, in output order:
-    fig01-04, fig07   sample QC, sample structure, region effect sizes, testable-set
-                      composition, the one significant region
-    fig05-06          candidate-region counts and chromosome distribution
-    fig08-11          Fig. 5A / 5B / 5C and the assembled Fig. 5
-    fig12-13          Supplementary Fig. 4A / 4B
-    fig14-15          imprinting-control-region panel
-
-Each figure is written as a vector PDF plus a CSV of exactly the values plotted.
-Data locations are set in the block below.
+Data locations are set in the block below; run from the repository root.
 """
 
 import os
@@ -24,15 +15,10 @@ from matplotlib import font_manager as fm
 from matplotlib.patches import Rectangle, FancyArrow
 from matplotlib.ticker import FuncFormatter, MaxNLocator
 
-# ===========================================================================
-# Data locations - edit this block only.  Relative paths resolve against the
-# working directory, so run the script from the repository root.
-#   IN_CPG_DIR  per-sample CpG tables (steps 1 and 2 only), one file per sample:
-#               chrom, start0, end, beta, M, U  -- tab-separated, no header
-#   REF_DIR     mm39 annotation: mm39.chrom.sizes, refGene.txt.gz,
-#               cpgIslandExt.txt.gz
-#   OUT_DIR     output root: intermediate tables in tables/, figures in figures/
-# ===========================================================================
+# Data locations - edit this block only; run from the repository root.
+#   IN_CPG_DIR  per-sample CpG tables: chrom, start0, end, beta, M, U (TSV, no header)
+#   REF_DIR     mm39: mm39.chrom.sizes, refGene.txt.gz, cpgIslandExt.txt.gz
+#   OUT_DIR     output root: tables/ and figures/
 IN_CPG_DIR = "data/cpg_tables"
 REF_DIR = "data/mm39"
 OUT_DIR = "results"
@@ -81,14 +67,14 @@ def save(fig, name, df=None):
 
 
 # ===========================================================================
-# fig01-fig04, fig07: sample QC, sample structure, region effects
+# sample QC, sample structure, region effects
 # ===========================================================================
 qc = pd.read_csv(os.path.join(TAB, "sample_QC.csv"))
 qc["label"] = qc["sample_id"].str.replace("-Blood-", " blood ").str.replace("-liver-", " liver ")
 gm = pd.read_csv(os.path.join(TAB, "global_methylation.csv"))
 gm["label"] = gm["sample_id"].str.replace("-Blood-", " blood ").str.replace("-liver-", " liver ")
 
-# ---------------- Figure 1: sample QC ---------------------------------------
+# ---- sample QC ----
 q = qc.copy()
 q["b_1_2"] = q["n_cov_1_2"]
 q["b_3_4"] = q["n_cpg"] - q["n_cov_1_2"] - q["n_cov_ge5"]
@@ -139,7 +125,7 @@ ax2.grid(axis="y", lw=0.5, alpha=0.35); ax2.set_axisbelow(True)
 fig.tight_layout()
 save(fig, "fig01_sample_qc", pd.concat(scat_rows, ignore_index=True))
 
-# ---------------- Figure 2: sample structure --------------------------------
+# ---- sample structure ----
 cl = pd.read_csv(os.path.join(TAB, "sample_correlation_complete_liver.csv"), index_col=0)
 cb = pd.read_csv(os.path.join(TAB, "sample_correlation_complete_blood.csv"), index_col=0)
 pl = pd.read_csv(os.path.join(TAB, "sample_PCA_liver.csv"), index_col=0)
@@ -188,7 +174,7 @@ for k, (pr, v, t) in enumerate(((pl, vl, "liver"), (pb, vb, "blood"))):
 fig.tight_layout()
 save(fig, "fig02_sample_structure", pd.concat(pca_rows, ignore_index=True))
 
-# ---------------- Figure 3: region-level effects ----------------------------
+# ---- region-level effects ----
 fig, axes = plt.subplots(2, 2, figsize=(12.4, 8.2))
 delta_rows = []
 for j, t in enumerate(("liver", "blood")):
@@ -231,7 +217,7 @@ for j, t in enumerate(("liver", "blood")):
 fig.tight_layout()
 save(fig, "fig03_region_effects", pd.concat(delta_rows, ignore_index=True))
 
-# ---------------- Figure 4: composition of the testable set -----------------
+# ---- composition of the testable set ----
 fig, axes = plt.subplots(1, 2, figsize=(12.0, 4.4))
 comp_rows = []
 for k, (cls, title, order) in enumerate((
@@ -254,7 +240,7 @@ for k, (cls, title, order) in enumerate((
 fig.tight_layout()
 save(fig, "fig04_genomic_distribution", pd.concat(comp_rows, ignore_index=True))
 
-# ---------------- Figure 5: the one significant region ----------------------
+# ---- the one significant region ----
 REG = dict(chrom="chr13", start=70881700, end=70882100)
 sids_c = ["Control-Blood-1", "Control-Blood-2", "Control-Blood-3"]
 sids_f = ["FAR-Blood-1", "FAR-Blood-2", "FAR-Blood-3"]
@@ -301,14 +287,14 @@ print("\nrenderer used for all figures:", RENDERER)
 
 
 # ===========================================================================
-# fig05-fig06: candidate-region counts and chromosome distribution
+# region counts and chromosome distribution
 # ===========================================================================
 COL_TISSUE = {"liver": "#0072B2", "blood": "#D55E00"}
 DIRCOL = {"FAR_high": "#D55E00", "FAR_low": "#0072B2", "none": "#9E9E9E"}
 
 res = pd.read_csv(os.path.join(TAB, "result_summary.csv")).set_index("tissue")
 
-# ============================ Figure 6: counts + direction ===================
+# ---- counts + direction ----
 dirs = {t: pd.read_csv(os.path.join(TAB, f"distribution_direction_{t}.csv")).set_index("direction")
         for t in ("liver", "blood")}
 ORDER = ["FAR_high", "FAR_low", "none"]
@@ -371,7 +357,7 @@ rows_b = [dict(panel="B_significant_region_counts", tissue=t, scope="region", me
                count=int(res.loc[t, k])) for lab, k, _ in LADDER for t in ("liver", "blood")]
 save(fig, "fig06_dmr_overview", pd.DataFrame(rows_a + rows_b))
 
-# ================== Figure 7: chromosome distribution =======================
+# ---- chromosome distribution ----
 sz = pd.read_csv(os.path.join(REF_DIR, "mm39.chrom.sizes"), sep="\t", header=None,
                  names=["chrom", "len"])
 sz = sz[sz.chrom.str.startswith("chr")].copy()
@@ -440,7 +426,7 @@ print("done")
 
 
 # ===========================================================================
-# fig08-fig11: Fig. 5A / 5B / 5C and the assembled figure
+# case-control methylation at selected loci
 # ===========================================================================
 FIGD = FIG                                     # figure directory
 FIGNAME = {"Fig5_combined": "fig11_fig5_combined",
@@ -789,7 +775,7 @@ if __name__ == "__main__":
 
 
 # ===========================================================================
-# fig12-fig13: Supplementary Fig. 4A / 4B
+# locus panels: epigenetic regulators and functional genes
 # ===========================================================================
 _style.apply(7.0)
 
@@ -841,7 +827,7 @@ print(st[["figure", "gene", "chrom", "window_kb", "n_comparable_cpg", "control_m
 
 
 # ===========================================================================
-# fig14-fig15: imprinting-control-region panel
+# imprinting-control-region panel
 # ===========================================================================
 _style.apply(7.0)
 

@@ -1,24 +1,15 @@
 #!/usr/bin/env python
-"""
-Step 08 - supplementary checks required by the handover contract:
-  (a) already-published loci (Dnmt1, Tet1 and the rest of the DNMT/TET family) re-checked on
-      MOUSE mm39 coordinates -- never reusing the human PEG10/ARGFX windows
-  (b) coverage sensitivity: how far the analysable range shrinks at a >=10x threshold
-  (c) agreement between the DSS reproduction and the region-level inference
+"""Supplementary checks: published loci re-checked on mouse mm39 coordinates, coverage
+sensitivity of the analysable set, and agreement between the DSS and region-level calls.
 """
 import os
 import numpy as np
 import pandas as pd
 
-# ===========================================================================
-# Data locations - edit this block only.  Relative paths resolve against the
-# working directory, so run the script from the repository root.
-#   IN_CPG_DIR  per-sample CpG tables (steps 1 and 2 only), one file per sample:
-#               chrom, start0, end, beta, M, U  -- tab-separated, no header
-#   REF_DIR     mm39 annotation: mm39.chrom.sizes, refGene.txt.gz,
-#               cpgIslandExt.txt.gz
-#   OUT_DIR     output root: intermediate tables in tables/, figures in figures/
-# ===========================================================================
+# Data locations - edit this block only; run from the repository root.
+#   IN_CPG_DIR  per-sample CpG tables: chrom, start0, end, beta, M, U (TSV, no header)
+#   REF_DIR     mm39: mm39.chrom.sizes, refGene.txt.gz, cpgIslandExt.txt.gz
+#   OUT_DIR     output root: tables/ and figures/
 IN_CPG_DIR = "data/cpg_tables"
 REF_DIR = "data/mm39"
 OUT_DIR = "results"

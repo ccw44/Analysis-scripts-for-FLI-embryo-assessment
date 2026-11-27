@@ -1,13 +1,4 @@
-"""Text setup shared by the figure scripts: one concrete font family.
-
-Requesting a generic family makes matplotlib fall back per character, and each
-fallback starts a new font run, which splits a word into several text objects in
-the exported PDF.  Setting one concrete family avoids that.
-
-Arial is tried first if it is installed; otherwise the script falls back through
-metrically compatible faces.  The family actually used is printed by every
-figure script.
-"""
+"""One concrete font family for matplotlib, so a line stays one text object in the PDF."""
 import os
 
 from matplotlib import font_manager as fm

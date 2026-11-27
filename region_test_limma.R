@@ -1,21 +1,15 @@
-## Step 05 - region-level inference: moderated t (limma eBayes) on per-sample region means
-## This is the Python-implementable stand-in for dmrseq's region-level inference (dmrseq is not
-## installed in this environment): candidate regions are locked from coverage only (step 04),
-## every candidate is tested genome-wide (not just DSS-selected regions), and the region-level
-## FDR (BH) is computed over the tested region set.
-##
-## Direction: coefficient 2 = FAR - Control (positive = FAR hypermethylated).
-## Pre-specified variance models, both reported:
-##   primary     : eBayes(trend = TRUE,  robust = TRUE)   mean-variance trend for beta values
-##   sensitivity : eBayes(trend = FALSE, robust = FALSE)  constant-variance model
+## Region-level inference: moderated t (limma eBayes) on per-sample region means.
+## Candidate regions are fixed from coverage only and every candidate is tested
+## genome-wide, with BH over the tested set.
+## Direction: coefficient 2 = FAR - Control (positive = FAR higher).
+## primary: trend = TRUE, robust = TRUE; sensitivity: trend = FALSE, robust = FALSE.
 
 ## Packages are expected in the default library; set R_LIBS otherwise.
 suppressPackageStartupMessages({ library(data.table); library(limma) })
 
-## ---- data locations: edit this block only ------------------------------
-## Run the script from the repository root; relative paths resolve against it.
+## Data locations - edit this block only; run from the repository root.
 ##   ref_dir  mm39 annotation (mm39.chrom.sizes)
-##   out_dir  output root; intermediate tables in tables/
+##   out_dir  output root; tables/ and figures/
 ref_dir <- "data/mm39"
 out_dir <- "results"
 TAB     <- file.path(out_dir, "tables")

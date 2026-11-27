@@ -1,15 +1,13 @@
-## Step 03 - DSS reproduction (DMLtest + callDMR) on the locked comparable CpG set
-## Executed in the shared kernel via run_r_code(); the file itself is the submitted script.
-## Direction: group1 = FAR (imaging), group2 = Control  ->  DML$diff > 0 means FAR hypermethylated.
+## DSS: DMLtest + callDMR on the locked comparable CpG set.
+## Direction: group1 = FAR, group2 = Control, so DML$diff > 0 means FAR higher.
 
 suppressPackageStartupMessages({
   library(data.table); library(bsseq); library(DSS); library(GenomicRanges)
   library(GenomeInfoDb); library(IRanges)
 })
-## ---- data locations: edit this block only ------------------------------
-## Run the script from the repository root; relative paths resolve against it.
+## Data locations - edit this block only; run from the repository root.
 ##   ref_dir  mm39 annotation (mm39.chrom.sizes)
-##   out_dir  output root; intermediate tables in tables/
+##   out_dir  output root; tables/ and figures/
 ref_dir <- "data/mm39"
 out_dir <- "results"
 TAB     <- file.path(out_dir, "tables")

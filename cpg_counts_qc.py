@@ -1,32 +1,18 @@
 #!/usr/bin/env python
-"""
-Step 01 - build per-sample M/U caches, sample QC, and the locked comparable-CpG sets.
+"""Per-sample CpG caches, sample QC and the locked comparable-CpG sets.
 
-Input : 12 x 6-column bed files (chrom, start0, end, beta, M, U) in the project root.
-Output: tmp/<sample>.idx.npy, tmp/<sample>.M.npy, tmp/<sample>.U.npy
-        tables/sample_QC.csv, tables/coverage_filter_summary.csv,
-        tables/comparable_<tissue>.tsv.gz  (chrom,start,end + per-sample M/cov)
-        tables/global_methylation.csv
-        logs/01_build_and_qc.log
-
-Locked rules (fixed before any differential result was inspected):
-  comparable CpG  : coverage (M+U) >= MINCOV in at least MIN_SAMPLES of the 3 samples of
-                    EACH group, per tissue.
-  sensitivity set : same rule with MINCOV10.
+The comparable set is fixed before any differential result is inspected: coverage
+>= MINCOV in >= MIN_SAMPLES of the three samples of each group, per tissue; the
+sensitivity set uses MINCOV10.
 """
 import os, sys, time, gzip, json
 import numpy as np
 import pandas as pd
 
-# ===========================================================================
-# Data locations - edit this block only.  Relative paths resolve against the
-# working directory, so run the script from the repository root.
-#   IN_CPG_DIR  per-sample CpG tables (steps 1 and 2 only), one file per sample:
-#               chrom, start0, end, beta, M, U  -- tab-separated, no header
-#   REF_DIR     mm39 annotation: mm39.chrom.sizes, refGene.txt.gz,
-#               cpgIslandExt.txt.gz
-#   OUT_DIR     output root: intermediate tables in tables/, figures in figures/
-# ===========================================================================
+# Data locations - edit this block only; run from the repository root.
+#   IN_CPG_DIR  per-sample CpG tables: chrom, start0, end, beta, M, U (TSV, no header)
+#   REF_DIR     mm39: mm39.chrom.sizes, refGene.txt.gz, cpgIslandExt.txt.gz
+#   OUT_DIR     output root: tables/ and figures/
 IN_CPG_DIR = "data/cpg_tables"
 REF_DIR = "data/mm39"
 OUT_DIR = "results"

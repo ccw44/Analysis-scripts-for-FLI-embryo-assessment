@@ -1,40 +1,19 @@
 #!/usr/bin/env python
-"""
-Step 04 - candidate regions, per-sample region methylation, contract effect size.
+"""Candidate regions, per-sample region methylation and the effect size.
 
-Region geometry is locked from COVERAGE/COMPARABILITY ONLY (no differential value is
-computed in this step, so the geometry cannot be chosen to favour a result):
-
-  * merge comparable CpGs on the same chromosome when the gap between consecutive
-    CpG starts is <= GAP_MAX bp (consistent with the historical DSS dis.merge = 100)
-  * require >= MIN_CG CpGs in a region (consistent with minCG = 3 and with the
-    manuscript's large-effect rule nCG >= 3)
-
-Per-sample region methylation (contract rule):
-  beta_sample = equal-weight mean of per-CpG M/(M+U) over the region's comparable CpGs
-                that are COVERED in that sample (cov >= 1)
-  valid        : the sample covers >= 50% of the region's comparable CpGs AND >= 2 CpGs
-  group mean   : equal-weight mean over the group's valid samples (independent samples)
-  requires >= 2 valid samples per group, otherwise effect size = NOT_EVALUABLE
-
-Outputs
-  tables/regions_all.tsv.gz              region table + per-sample beta/nCovered + effect size
-  tables/region_mean_matrix.tsv.gz       region_id x 6 samples (NaN = not valid) for the test
-  tables/region_geometry_summary.csv
+Geometry is fixed from coverage only: merge comparable CpGs with a gap <= GAP_MAX bp and
+require >= MIN_CG CpGs. A sample is valid for a region when it covers >= 50% of the
+region CpGs and at least two CpGs; the group mean is the equal-weight mean over its valid
+samples, and the effect size is FLI 2 h minus control.
 """
 import os
 import numpy as np
 import pandas as pd
 
-# ===========================================================================
-# Data locations - edit this block only.  Relative paths resolve against the
-# working directory, so run the script from the repository root.
-#   IN_CPG_DIR  per-sample CpG tables (steps 1 and 2 only), one file per sample:
-#               chrom, start0, end, beta, M, U  -- tab-separated, no header
-#   REF_DIR     mm39 annotation: mm39.chrom.sizes, refGene.txt.gz,
-#               cpgIslandExt.txt.gz
-#   OUT_DIR     output root: intermediate tables in tables/, figures in figures/
-# ===========================================================================
+# Data locations - edit this block only; run from the repository root.
+#   IN_CPG_DIR  per-sample CpG tables: chrom, start0, end, beta, M, U (TSV, no header)
+#   REF_DIR     mm39: mm39.chrom.sizes, refGene.txt.gz, cpgIslandExt.txt.gz
+#   OUT_DIR     output root: tables/ and figures/
 IN_CPG_DIR = "data/cpg_tables"
 REF_DIR = "data/mm39"
 OUT_DIR = "results"

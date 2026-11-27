@@ -1,36 +1,19 @@
 #!/usr/bin/env python
-"""
-Step 06 - annotation, result subsets and per-tissue summary counts.
+"""Region annotation, result layers and per-tissue summary counts.
 
-Annotation (all against the same mm39 build as the coordinates):
-  * UCSC refGene  -> transcript-level TSS, exons, gene bodies
-  * UCSC cpgIslandExt -> CpG islands
-Feature class per region (MUTUALLY EXCLUSIVE, priority order stated):
-      promoter > exon > intron > intergenic
-  promoter = TSS -2,000 .. TSS +500 in the transcription direction (transcript level)
-  exon     = overlaps any refGene exon
-  intron   = inside a gene body but not in an exon
-  intergenic = outside every gene body
-CpG-island class (separate scheme, mutually exclusive):
-      island > shore (<=2 kb) > shelf (<=4 kb) > open sea
-Nearest gene = nearest transcript-level TSS; distance is signed (+ = downstream of TSS).
-
-Result layers (per tissue), all kept as tables even when empty:
-  candidate regions -> q<0.05 -> large-effect subset (q<0.05 & nCG>=3 & |diff|>0.20)
+Feature classes are mutually exclusive (promoter > exon > intron > intergenic); CpG-island
+classes use a separate exclusive scheme (island > shore > shelf > open sea). Result layers
+are candidate regions, q < 0.05 and the large-effect subset; an empty layer is still
+written, with a header.
 """
 import os, gzip
 import numpy as np
 import pandas as pd
 
-# ===========================================================================
-# Data locations - edit this block only.  Relative paths resolve against the
-# working directory, so run the script from the repository root.
-#   IN_CPG_DIR  per-sample CpG tables (steps 1 and 2 only), one file per sample:
-#               chrom, start0, end, beta, M, U  -- tab-separated, no header
-#   REF_DIR     mm39 annotation: mm39.chrom.sizes, refGene.txt.gz,
-#               cpgIslandExt.txt.gz
-#   OUT_DIR     output root: intermediate tables in tables/, figures in figures/
-# ===========================================================================
+# Data locations - edit this block only; run from the repository root.
+#   IN_CPG_DIR  per-sample CpG tables: chrom, start0, end, beta, M, U (TSV, no header)
+#   REF_DIR     mm39: mm39.chrom.sizes, refGene.txt.gz, cpgIslandExt.txt.gz
+#   OUT_DIR     output root: tables/ and figures/
 IN_CPG_DIR = "data/cpg_tables"
 REF_DIR = "data/mm39"
 OUT_DIR = "results"

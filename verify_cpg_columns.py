@@ -1,28 +1,17 @@
 #!/usr/bin/env python
-"""
-Step 02 - independent re-verification of the column semantics of all 12 source files.
+"""Independent re-check of the column semantics of the 12 source files.
 
-For every file, streamed in 2M-row chunks (never the whole file in memory):
-  * beta (col 4) == M/(M+U) exactly, max absolute deviation
-  * M (col 5) and U (col 6) are non-negative integers
-  * M+U > 0 everywhere (no undefined ratio)
-  * end - start == 1 (single-base CpG resolution)
-  * coordinates inside the mm39 chromosome frame
-Writes tables/columns_check.csv and fills the beta-deviation column of sample_QC.csv.
+Confirms beta = M/(M+U), non-negative integer counts, single-base intervals and
+coordinates inside the mm39 frame; streamed in 2M-row chunks. Writes columns_check.csv.
 """
 import os
 import numpy as np
 import pandas as pd
 
-# ===========================================================================
-# Data locations - edit this block only.  Relative paths resolve against the
-# working directory, so run the script from the repository root.
-#   IN_CPG_DIR  per-sample CpG tables (steps 1 and 2 only), one file per sample:
-#               chrom, start0, end, beta, M, U  -- tab-separated, no header
-#   REF_DIR     mm39 annotation: mm39.chrom.sizes, refGene.txt.gz,
-#               cpgIslandExt.txt.gz
-#   OUT_DIR     output root: intermediate tables in tables/, figures in figures/
-# ===========================================================================
+# Data locations - edit this block only; run from the repository root.
+#   IN_CPG_DIR  per-sample CpG tables: chrom, start0, end, beta, M, U (TSV, no header)
+#   REF_DIR     mm39: mm39.chrom.sizes, refGene.txt.gz, cpgIslandExt.txt.gz
+#   OUT_DIR     output root: tables/ and figures/
 IN_CPG_DIR = "data/cpg_tables"
 REF_DIR = "data/mm39"
 OUT_DIR = "results"
